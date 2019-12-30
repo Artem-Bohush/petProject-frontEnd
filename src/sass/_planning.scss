@@ -1,0 +1,56 @@
+.planning-card {
+    background-color: #fff;
+    box-shadow: 1px 1px 5px rgba(126,142,159,.1);
+    &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        border-bottom: 1px solid #D7DDE4;
+        .header-title {
+            margin: 0;
+            color: #4f5f6f;
+            font-size: 18px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+        .balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-right: 15px;
+            &-text {
+                margin: 0 5px 3px 0;
+                font-size: 19px;
+                font-weight: 400;
+                color: #4f5f6f;
+            }
+            &-value {
+                color: #61B85C;
+                font-size: 18px;
+            }
+            .icon-hryvnia-solid {
+                font-size: 15px;
+                color: #61B85C;
+            }
+        }
+    }
+    .planning-card-info {
+        padding: 15px;
+        .row {
+            height: 40px;
+            .progress {
+                height: 20px;
+                span {
+                    font-size: 12px;
+                    color: #000;
+                }
+            }
+            p {
+                font-size: 16px;
+                line-height: 16px;
+                margin: 0;
+            }
+        }
+    }
+}

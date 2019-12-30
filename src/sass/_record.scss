@@ -1,0 +1,108 @@
+.record-card {
+    background-color: #fff;
+    box-shadow: 1px 1px 5px rgba(126,142,159,.1);
+    margin-bottom: 30px;
+    &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        border-bottom: 1px solid #D7DDE4;
+        .header-title {
+            margin: 0;
+            color: #4f5f6f;
+            font-size: 18px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+    }
+    &-block {
+        padding: 15px;
+        form {
+            .form-group {
+                font-weight: 600;
+                color: #4f5f6f;
+                .radio-types {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 310px;
+                }
+                .form-control:focus {
+                    border-color: #52BCD3;
+                    box-shadow: none;
+                }
+                .radio, .radio-two {
+                    position: relative;
+                    &-input {
+                        appearance: none;
+                        position: absolute;
+                        &:checked + .radio-label::before {
+                            border-color: #878C91;
+                        }
+                        &:checked + .radio-label::after {
+                            opacity: 1;
+                        }
+                    }
+                    &-label {
+                        padding-left: 20px;
+                        cursor: pointer;
+                        &::before {
+                            content: "";
+                            display: block;
+                            width: 16px;
+                            height: 16px;
+                            border: 1px solid #ccc;
+                            border-radius: 50%;
+                            position: absolute;
+                            left: 0;
+                            z-index: 1;
+                            transition: 0.3s;
+                            opacity: 1;
+                        }
+                        &::after {
+                            content: "";
+                            display: block;
+                            width: 10px;
+                            height: 10px;
+                            background-color: #52bcd3;
+                            border-radius: 50%;
+                            position: absolute;
+                            left: 3px;
+                            z-index: 2;
+                            transition: 0.3s;
+                            opacity: 0;
+                        }
+                    }
+                }
+                div {
+                    label {
+                        display: flex;
+                        align-items: center;
+                        .radio {
+
+                        }
+                        span {
+                            margin-left: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.btn-primary {
+    border-radius: 0;
+    background-color: #52bcd3;
+    border: none;
+    transition: 0.1s;
+    &:hover {
+        background-color: #31A7C1;
+        transition: 0.3s;
+    }
+}
+.btn:focus {
+    border-color: #52BCD3;
+    box-shadow: none;
+}

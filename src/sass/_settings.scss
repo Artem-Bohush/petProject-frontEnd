@@ -1,0 +1,85 @@
+.settings-card {
+    background-color: #fff;
+    box-shadow: 1px 1px 5px rgba(126,142,159,.1);
+    padding: 0 30px;
+    margin-bottom: 50px;
+    .new-email {
+        padding: 20px 0;
+        border-bottom: 1px solid #D7DDE4;
+        .success-email-change {
+            display: none;
+            color: #61B85C;
+        }
+    }
+    .new-password {
+        padding: 20px 0;
+        border-bottom: 1px solid #D7DDE4;
+        .form-control {
+            margin-bottom: 10px;
+        }
+        .password-length {
+            display: none;
+            font-size: 14px;
+            color: #DA000B;
+            font-weight: 400;
+            font-style: italic;
+        }
+    }
+    .new-name {
+        padding: 20px 0;
+    }
+    .control-label {
+        color: #4f5f6f;
+        span {
+            color: #000;
+            font-weight: 600;
+        }
+    }
+    .btn.btn-primary {
+        font-size: 14px;
+    }
+    .form-control {
+        &::placeholder {
+            font-style: italic;
+        }
+        &:focus {
+            border-color: #52BCD3;
+            box-shadow: none;
+        }
+    }
+}
+
+.settings-title-block {
+    justify-content: start;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #D7DDE4;
+    height: 50px;
+    margin: 20px 0 25px 0;
+    padding-bottom: 10px;
+    .title {
+        color: #4F5F6F;
+        margin: 0;
+        font-weight: 600;
+        font-size: 23px;
+    } 
+    div {
+        width: 28px;
+        height: 28px;
+        text-align: center;
+        border: 2px solid #52bcd3;
+        border-radius: 50%;
+        margin-right: 15px;
+        cursor: pointer;
+        color: #52bcd3;
+        &:hover {
+            border: 2px solid #0f93b1;
+            color: #0f93b1;
+            transition: 0.3s;
+        }
+        .icon-arrow-left-solid::before {
+            margin-top: 4px;
+            display: block;
+        }
+    }
+}

@@ -1,0 +1,123 @@
+.history-card {
+    background-color: #fff;
+    box-shadow: 1px 1px 5px rgba(126,142,159,.1);
+    margin-bottom: 30px;
+    &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        border-bottom: 1px solid #D7DDE4;
+        padding: 0 15px 0 15px;
+        .header-title {
+            margin: 0;
+            color: #4f5f6f;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .search-block {
+            display: flex;
+            align-items: center;
+            .form-control {
+                margin-right: 10px;
+                border-radius: 0;
+                &::placeholder {
+                    color: #C8D2E3;
+                    font-weight: 400;
+                    font-style: italic;
+                }
+            }
+            .form-control:focus {
+                border-color: #52BCD3;
+                box-shadow: none;
+            }
+            .select {
+                position: relative;
+                &::after {
+                    content: "";
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 6px 5px 0 5px;
+                    border-color: #4f5f6f transparent transparent transparent;
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 1;
+                    right: 10px;
+                    pointer-events: none;
+                }
+                select {
+                    background: none;
+                    border: 1px solid #CED4DA; 
+                    -webkit-appearance: none;
+                    color: #4f5f6f;
+                    outline: none;
+                    height: 38px;
+                    width: 135px;
+                    padding-left: 10px;
+                    padding-right: 23px;
+                    &:hover {
+                        border-color: #52BCD3;
+                        transition: 0.3s;
+                    }
+                    option {
+                        color: #4f5f6f;
+                    }
+                }
+            }
+            .btn {
+                margin-right: 15px;
+                color: #4f5f6f;
+                background-color: #fff;
+                border-color: #d7dde4;
+                border-radius: 0;
+                height: 38px;
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+    }
+    .history-card-info {
+        padding: 15px;
+        .table {
+            color: #4f5f6f;
+            .income {
+                font-size: 13px;
+                text-align: center;
+                color: #fff;
+                font-weight: 600;
+                border-radius: 5px;
+                width: 60px;
+                padding: 1px 0;
+                background-color: #5cb85c;
+            }
+            .expense {
+                font-size: 13px;
+                text-align: center;
+                color: #fff;
+                font-weight: 600;
+                border-radius: 5px;
+                width: 60px;
+                padding: 1px 0;
+                background-color: #D9534F;
+            }
+            .details-btn {
+                height: 30px;
+                width: 100px;
+                background-color: #fff;
+                border: 1px solid #52BCD3;
+                color: #52BCD3;
+                font-size: 14px;
+                outline: none;
+                &:hover {
+                    color: #fff;
+                    background-color: #52BCD3;
+                    transition: 0.3s;
+                }
+            }
+        }
+    }
+}
