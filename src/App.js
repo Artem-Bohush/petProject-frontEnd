@@ -4,16 +4,18 @@ import Login from './components/Login';
 import SignUp from './components/Signup';
 import Template from './components/Template';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
-
+import Balance from './components/Balance';
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      login: true, signup: false, template: false,
+      login: true,
+      signup: false,
+      template: false,
       successSignup: { display: 'none' },
       userEmail: '',
       userName: '',
-      userBalance: ''
+      userBalance: '',
     };
   }
 

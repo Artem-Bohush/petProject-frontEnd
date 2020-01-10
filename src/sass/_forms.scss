@@ -184,11 +184,6 @@
             font-style: italic;
           }
         }
-        .success-login {
-          display: none;
-          text-align: center;
-          color: #61b85c;
-        }
         .form-button {
           display: block;
           width: 100%;
@@ -238,6 +233,11 @@
             }
           }
         }
+      }
+      .success-login {
+        display: none;
+        text-align: center;
+        color: #61b85c;
       }
     }
   }

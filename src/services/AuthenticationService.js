@@ -1,44 +1,64 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8080';
-
-export const USER_NAME_SESSION_ATTRIBUTE_NAME = 'authenticatedUser';
-
+import info from './Info';
 class AuthenticationService {
-    executeBasicAuthentication(username, password) {
-        return axios.get(`${API_URL}/basicauth`,
-            { headers: { authorization: this.createBasicAuthToken(username, password) } });
-    }
 
-    createBasicAuthToken(username, password) {
-        return 'Basic ' + window.btoa(username + ":" + password);
-    }
+  async executeJwtAuthenticationService(email, password) {
+    let response = await fetch(`${info.API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({ email, password })
+    });
+    return await response.json();
+  }
 
-    registerSuccessfulLogin(username, password) {
-        sessionStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username);
-        this.setupAxiosInterceptors(this.createBasicAuthToken(username, password));
-    }
+  registerSuccessfulLoginForJwt(token) {
+    sessionStorage.setItem(info.SESSION_NAME, 'Bearer_' + token);
+    // this.token = 'Bearer_' + token;
+    // this.setupAxiosInterceptors(this.createJWTToken(token))
+  }
 
-    setupAxiosInterceptors(token) {
-        axios.interceptors.request.use(
-            (config) => {
-                if (this.isUserLoggedIn()) {
-                    config.headers.authorization = token;
-                }
-                return config;
-            }
-        )
-    }
+  isUserLoggedIn() {
+    let user = sessionStorage.getItem(info.SESSION_NAME);
+    return user === null ? false : true;
+  }
 
-    isUserLoggedIn() {
-        let user = sessionStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME)
-        if (user === null) return false
-        return true
-    }
+  logout() {
+    sessionStorage.removeItem(info.SESSION_NAME);
+  }
 
-    logout() {
-        sessionStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
-    }
+  // get tokenValue() {
+  //   return this.token;
+  // }
+
+  // createJWTToken(token) {
+  //   return 'Bearer_' + token
+  // }
+
+  // executeBasicAuthentication(username, password) {
+  //   return axios.get(`${API_URL}/basicauth`,
+  //     { headers: { authorization: this.createBasicAuthToken(username, password) } });
+  // }
+
+  // createBasicAuthToken(username, password) {
+  //   return 'Basic ' + window.btoa(username + ":" + password);
+  // }
+
+  // registerSuccessfulLogin(username, password) {
+  //   sessionStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username);
+  //   this.setupAxiosInterceptors(this.createBasicAuthToken(username, password));
+  // }
+
+  // setupAxiosInterceptors(token) {
+  //   axios.interceptors.request.use(
+  //     (config) => {
+  //       if (this.isUserLoggedIn()) {
+  //         config.headers.authorization = token;
+  //       }
+  //       return config;
+  //     }
+  //   )
+  // }
 }
 
 export default new AuthenticationService()

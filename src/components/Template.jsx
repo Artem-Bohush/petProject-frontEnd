@@ -5,77 +5,33 @@ import Record from './Record';
 import Planning from './Planning';
 import History from './History';
 import Details from './Details';
-import EditBalance from './EditBalance';
 import Settings from './Settings';
+import TemplateService from '../services/TemplateService';
+import AuthenticationService from '../services/AuthenticationService';
+import Contex from '../context';
 
 class Template extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      content: [
-        { name: 'Balance', show: true },
-        { name: 'Record', show: false },
-        { name: 'Planning', show: false },
-        { name: 'History', show: false },
-        { name: 'Details', show: false },
-        { name: 'EditBalance', show: false },
-        { name: 'Settings', show: false }
-      ],
+      content: {
+        balance: true,
+        record: false,
+        planning: false,
+        history: false,
+        details: false,
+        settings: false
+      },
       time: new Date(),
       date: new Date().getDate() + '.' + (+new Date().getMonth() + 1) + '.' + new Date().getFullYear(),
-      rateTable: [
-        { name: 'dollar', rate: '24.55' },
-        { name: 'euro', rate: '27.75' }
-      ],
-      historyTable: [
-        { id: '1', value: '99.99', date: new Date().getFullYear(), category: 'category1', type: 'income', descr: 'some descr1' },
-        { id: '2', value: '99.99', date: new Date().getFullYear(), category: 'category2', type: 'expense', descr: 'some descr2' },
-        { id: '3', value: '99.99', date: new Date().getFullYear(), category: 'category3', type: 'income', descr: 'some descr3' },
-        { id: '4', value: '99.99', date: new Date().getFullYear(), category: 'category4', type: 'expense', descr: 'some descr4' },
-        { id: '5', value: '99.99', date: new Date().getFullYear(), category: 'category5', type: 'income', descr: 'some descr5' },
-      ],
-      previousPageName: ''
+      previousPageName: '',
+      userName: ''
     };
+    this.goBack = this.goBack.bind(this);
   }
 
   render() {
-    const Component = () => {
-      if (this.state.content[0].show === true) {
-        if (this.state.content[5].show === true) {
-          return (
-            <>
-              <Balance showEditBalanceCallBack={() => this.showEditBalance()} />
-              <EditBalance showEditBalanceCallBack={() => this.showEditBalance()} />
-            </>
-          )
-        }
-        return (
-          <Balance showEditBalanceCallBack={() => this.showEditBalance()} />
-        )
-      } else if (this.state.content[1].show === true) {
-        return (
-          <Record />
-        )
-      } else if (this.state.content[2].show === true) {
-        return (
-          <Planning />
-        )
-      } else if (this.state.content[3].show === true) {
-        return (
-          <History />
-        )
-      } else if (this.state.content[4].show === true) {
-        return (
-          <Details />
-        )
-      } else {
-        return (
-          <Settings previousPageName={this.state.previousPageName}
-            goBackCallBack={(previousPageName) => this.goBack(previousPageName)} />
-        )
-      }
-    };
-
     return (
       <div className="account">
         <div className="sidebar">
@@ -87,13 +43,13 @@ class Template extends React.Component {
           </div>
           <nav className="menu">
             <ul>
-              <li className="option active" onClick={(event) => this.showContent('Balance', event.target)}>
+              <li className="option active" onClick={(event) => this.showContent('balance', event.target)}>
                 <span className="icon-file-invoice-dollar-solid"></span>Баланс</li>
-              <li className="option" onClick={(event) => this.showContent('Record', event.target)}>
+              <li className="option" onClick={(event) => this.showContent('record', event.target)}>
                 <span className="icon-file-medical-solid"></span>Запись</li>
-              <li className="option" onClick={(event) => this.showContent('Planning', event.target)}>
+              <li className="option" onClick={(event) => this.showContent('planning', event.target)}>
                 <span className="icon-calendar-alt-regular"></span>Планирование</li>
-              <li className="option" onClick={(event) => this.showContent('History', event.target)}>
+              <li className="option" onClick={(event) => this.showContent('history', event.target)}>
                 <span className="icon-history-solid"></span>История</li>
             </ul>
           </nav>
@@ -114,100 +70,35 @@ class Template extends React.Component {
             </div>
           </div>
           <div className="article-content">
-            <Component />
-            {/* <Balance show={this.state.content[0].show}
-                            rateTable={this.state.rateTable}
-                            currentBalance={this.props.currentBalance}
-                            showEditBalanceCallBack={() => this.showEditBalance()}
-                            refreshRateTableCallBack={(dollarRate, euroRate) => this.refreshRateTable(dollarRate, euroRate)}/>
-                        <Record show={this.state.content[1].show}/>
-                        <Planning show={this.state.content[2].show}/>
-                        <History show={this.state.content[3].show}
-                            historyTable={this.state.historyTable}
-                            showRecordDetailsCallBack={(id) => this.showRecordDetails(id)}/>
-                        <Details show={this.state.content[4].show}
-                            recordDetails={this.state.recordDetails}
-                            goBackToHistoryCallBack={() => this.goBackToHistory()}/>
-                        <EditBalance show={this.state.content[5].show}
-                            currentBalance={this.props.currentBalance}
-                            email={this.props.email}
-                            showEditBalanceCallBack={() => this.showEditBalance()}
-                            editBalanceValueCallBack={(newBalance) => this.editBalanceValue(newBalance)}/>
-                        <Settings show={this.state.content[6].show}
-                            previousPage={this.state.previousPage}
-                            email={this.props.email}
-                            goBackCallBack={(previousPage) => this.goBack(previousPage)}/> */}
+            <Contex.Provider value={{ goBack: this.goBack }}>
+              <Balance isOpen={this.state.content.balance} />
+              <Record isOpen={this.state.content.record} />
+              <Planning isOpen={this.state.content.planning} />
+              <History isOpen={this.state.content.history} />
+              <Details isOpen={this.state.content.details} />
+              <Settings isOpen={this.state.content.settings} goBack={this.goBack} />
+            </Contex.Provider>
           </div>
         </article>
       </div>
     )
   }
 
-  showEditBalance() {
-    const contentCopy = this.state.content.concat()
-    contentCopy.forEach(element => {
-      if (element.name === 'EditBalance') {
-        element.show = !element.show
-        if (element.show === true) {
-          document.getElementsByClassName('article-content')[0].classList.add('hide')
-        } else {
-          document.getElementsByClassName('article-content')[0].classList.remove('hide')
-        }
-        return
-      }
-    })
-    this.setState({ content: contentCopy })
-  }
-
-  showSettings() {
+  showContent(name, li) {
     document.querySelector('.login-options').style.display = 'none';
-    const contentCopy = this.state.content.concat();
-    let currentPageName;
-    contentCopy.forEach(element => {
-      if (element.show) {
-        currentPageName = element.name;
-        element.show = false;
-        return;
+    const options = document.getElementsByClassName('option');
+    for (let item of options) {
+      if (item.classList.contains('active')) {
+        item.classList.remove('active');
+        li.classList.add('active');
       }
-    });
-    contentCopy.find(c => c.name === 'Settings').show = true;
-    this.setState({ content: contentCopy, previousPageName: currentPageName });
-  }
-
-  goBack(previousPageName) {
-    const contentCopy = this.state.content.concat();
-    contentCopy.find(c => c.name === 'Settings').show = false;
-    contentCopy.find(c => c.name === previousPageName).show = true;
-    this.setState({ content: contentCopy });
-  }
-
-  //-----------------нижче попередні функції-------------------------------
-
-  editBalanceValue(newBalance) {
-    this.props.editCurrentBalanceCallBack(newBalance);
-  }
-
-  refreshRateTable(dollarRate, euroRate) {
-    const rateTableCopy = this.state.rateTable.concat();
-    rateTableCopy[0].rate = dollarRate;
-    rateTableCopy[1].rate = euroRate;
-    this.setState({ rateTable: rateTableCopy });
-  }
-
-  showRecordDetails(id) {
-    const historyTableCopy = this.state.historyTable.concat();
-    let t = historyTableCopy.find(c => c.id === id);
-    const contentCopy = this.state.content.concat();
-    contentCopy.find(c => c.name === 'History').show = false;
-    contentCopy.find(c => c.name === 'Details').show = true;
-    this.setState({ content: contentCopy, historyTable: historyTableCopy, recordDetails: t });
-  }
-
-  goBackToHistory() {
-    const contentCopy = this.state.content.concat();
-    contentCopy.find(c => c.name === 'Details').show = false;
-    contentCopy.find(c => c.name === 'History').show = true;
-    this.setState({ content: contentCopy });
+    }
+    const contentCopy = Object.assign({}, this.state.content);
+    for (let tab in contentCopy) {
+      contentCopy[tab] = false;
+    }
+    contentCopy[name] = true;
+    this.setState({ content: contentCopy })
   }
 
   showLoginOptions() {
@@ -220,51 +111,42 @@ class Template extends React.Component {
   }
 
   logOut() {
-    this.props.toggleToLoginCallBack()
+    AuthenticationService.logout();
+    this.props.history.push('/login');
   }
 
-  showContent(name, li) {
+  showSettings() {
     document.querySelector('.login-options').style.display = 'none';
-    const options = document.getElementsByClassName('option')
-    for (let item of options) {
-      if (item.classList.contains('active')) {
-        item.classList.remove('active')
-        li.classList.add('active')
+    const contentCopy = Object.assign({}, this.state.content);
+    let currentPageName;
+    for (let tab in contentCopy) {
+      if (contentCopy[tab] === true) {
+        currentPageName = tab;
+        contentCopy[tab] = false;
+      }
+      if (tab === 'settings') {
+        contentCopy.settings = true;
       }
     }
-    const contentCopy = this.state.content.concat()
-    contentCopy.forEach(element => {
-      if (element.show) {
-        element.show = false
-        contentCopy.find(c => c.name === name).show = true
-        return
-      }
-    })
-    this.setState({ content: contentCopy })
+    this.setState({ content: contentCopy, previousPageName: currentPageName });
   }
 
-  componentDidMount() {
-    // this.timerId = setInterval(
-    //     () => this.tick(), 1000
-    // )
-    // this.getUserName()
+  goBack() {
+    const contentCopy = Object.assign({}, this.state.content);
+    for (let tab in contentCopy) {
+      contentCopy[tab] = false;
+    }
+    contentCopy[this.state.previousPageName] = true;
+    this.setState({ content: contentCopy });
   }
 
-  getUserName() {
-    let request = new XMLHttpRequest();
-    request.open('GET', 'getUserName');
-    request.setRequestHeader('Content-type', 'application/json; charset = utf-8');
-    request.send();
-    request.addEventListener('readystatechange', function () {
-      if (request.readyState === 4 && request.status === 200) {
-        let data = JSON.parse(request.response);
-        this.setState.userName = data.name
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerId);
+  retrieveUserName() {
+    TemplateService.retrieveUserName()
+      .then(result => {
+        const userName = result.username;
+        this.setState({ userName: userName })
+      })
+      .catch(error => console.error(error));
   }
 
   tick() {
@@ -272,6 +154,68 @@ class Template extends React.Component {
       time: new Date()
     })
   }
+
+  componentDidMount() {
+    // this.timerId = setInterval(
+    //   () => this.tick(), 1000
+    // )
+
+    this.retrieveUserName();
+  }
+
+  componentWillUnmount() {
+
+  }
+
+
+
+
+
+
+  // showEditBalance() {
+  //   const contentCopy = this.state.content.concat()
+  //   contentCopy.forEach(element => {
+  //     if (element.name === 'EditBalance') {
+  //       element.show = !element.show
+  //       if (element.show === true) {
+  //         document.getElementsByClassName('article-content')[0].classList.add('hide')
+  //       } else {
+  //         document.getElementsByClassName('article-content')[0].classList.remove('hide')
+  //       }
+  //       return
+  //     }
+  //   })
+  //   this.setState({ content: contentCopy })
+  // }
+
+  //-----------------нижче попередні функції-------------------------------
+
+  // editBalanceValue(newBalance) {
+  //   this.props.editCurrentBalanceCallBack(newBalance);
+  // }
+
+  // refreshRateTable(dollarRate, euroRate) {
+  //   const rateTableCopy = this.state.rateTable.concat();
+  //   rateTableCopy[0].rate = dollarRate;
+  //   rateTableCopy[1].rate = euroRate;
+  //   this.setState({ rateTable: rateTableCopy });
+  // }
+
+  // showRecordDetails(id) {
+  //   const historyTableCopy = this.state.historyTable.concat();
+  //   let t = historyTableCopy.find(c => c.id === id);
+  //   const contentCopy = this.state.content.concat();
+  //   contentCopy.find(c => c.name === 'History').show = false;
+  //   contentCopy.find(c => c.name === 'Details').show = true;
+  //   this.setState({ content: contentCopy, historyTable: historyTableCopy, recordDetails: t });
+  // }
+
+  // goBackToHistory() {
+  //   const contentCopy = this.state.content.concat();
+  //   contentCopy.find(c => c.name === 'Details').show = false;
+  //   contentCopy.find(c => c.name === 'History').show = true;
+  //   this.setState({ content: contentCopy });
+  // }
 }
 
 export default Template;
