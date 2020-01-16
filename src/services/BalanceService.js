@@ -26,7 +26,7 @@ class BalanceService {
     const response = await fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5');
     const rates = await response.json();
     const requiredCurrency = rates.filter(currency => {
-      return (currency.ccy === 'USD' || currency.ccy === 'EUR') ? true : false;
+      return (currency.ccy === 'RUR' || currency.ccy === 'USD' || currency.ccy === 'EUR') ? true : false;
     });
     return requiredCurrency;
   }

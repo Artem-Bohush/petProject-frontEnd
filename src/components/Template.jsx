@@ -1,14 +1,20 @@
 import React from 'react';
 import logo from '../img/png/logo.png';
 import Balance from './Balance';
-import Record from './Record';
-import Planning from './Planning';
-import History from './History';
-import Details from './Details';
-import Settings from './Settings';
+// import Record from './Record/Record';
+// import Planning from './Planning';
+// import History from './History/History';
+// import Details from './Details';
+// import Settings from './Settings';
 import TemplateService from '../services/TemplateService';
 import AuthenticationService from '../services/AuthenticationService';
 import Contex from '../context';
+
+const Record = React.lazy(() => import('./Record/Record'));
+const Planning = React.lazy(() => import('./Planning'));
+const History = React.lazy(() => import('./History/History'));
+const Details = React.lazy(() => import('./Details'));
+const Settings = React.lazy(() => import('./Settings'));
 
 class Template extends React.Component {
 
@@ -72,11 +78,13 @@ class Template extends React.Component {
           <div className="article-content">
             <Contex.Provider value={{ goBack: this.goBack }}>
               <Balance isOpen={this.state.content.balance} />
-              <Record isOpen={this.state.content.record} />
-              <Planning isOpen={this.state.content.planning} />
-              <History isOpen={this.state.content.history} />
-              <Details isOpen={this.state.content.details} />
-              <Settings isOpen={this.state.content.settings} goBack={this.goBack} />
+              <React.Suspense fallback={<p>Loading...</p>}>
+                <Record isOpen={this.state.content.record} />
+                <Planning isOpen={this.state.content.planning} />
+                <History isOpen={this.state.content.history} />
+                <Details isOpen={this.state.content.details} />
+                <Settings isOpen={this.state.content.settings} goBack={this.goBack} />
+              </React.Suspense>
             </Contex.Provider>
           </div>
         </article>

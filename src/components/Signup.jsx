@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import LogSignService from '../services/LogSignService';
+import SignupService from '../services/SignupService';
 import logo from '../img/png/logo.png';
 
 class SignUp extends React.Component {
@@ -40,7 +40,7 @@ class SignUp extends React.Component {
               </div>
               <div className="form-group">
                 <label htmlFor="name">Имя</label>
-                <input type="text" className="form-input" id="name" name="name"
+                <input type="text" className="form-input" id="name" name="username"
                   placeholder="Введите имя" onInput={() => this.checkName()}></input>
                 <div className="name-require">Заполните поле</div>
               </div>
@@ -66,33 +66,37 @@ class SignUp extends React.Component {
   signUp(e) {
     e.preventDefault();
     let form = document.querySelector('.login-content-form'),
-      success = document.querySelector('.success-login'),
       formData = new FormData(form),
-      obj = {};
+      success = document.querySelector('.success-login'),
+      newUser = {};
 
     formData.forEach(function (value, key) {
-      obj[key] = value;
+      newUser[key] = value;
     });
-
-    LogSignService.signUp(obj).then(() => {
-      success.style.display = 'block';
-      setTimeout(() => {
-        this.props.history.push(`/login`)
-      }, 1500);
-    }).catch(() => {
-      console.log('smth went wrong(');
-    })
+    SignupService.executeSignup(newUser)
+      .then(() => {
+        console.log('OK');
+      })
+      .catch(error => console.error(error));
+    // LogSignService.signUp(obj).then(() => {
+    //   success.style.display = 'block';
+    //   setTimeout(() => {
+    //     this.props.history.push(`/login`)
+    //   }, 1500);
+    // }).catch(() => {
+    //   console.log('smth went wrong(');
+    // })
   }
 
   checkEmail(el) {
     // document.getElementsByClassName('email-require')[0].style.display = 'none'
-    let emailExists = document.querySelector('.email-exists'),
-      obj = { email: el.value };
-    LogSignService.checkEmail(obj).then(() => {
-      emailExists.style.display = 'block'
-    }).catch(() => {
-      emailExists.style.display = 'none'
-    })
+    // let emailExists = document.querySelector('.email-exists'),
+    //   obj = { email: el.value };
+    // LogSignService.checkEmail(obj).then(() => {
+    //   emailExists.style.display = 'block'
+    // }).catch(() => {
+    //   emailExists.style.display = 'none'
+    // })
   }
 
   agree() {

@@ -11,6 +11,7 @@ class Balance extends React.Component {
         new Date().getDate() + '.' + (+new Date().getMonth() + 1) + '.' + new Date().getFullYear(),
       currentBalance: '',
       showEditBalance: false,
+      rateRUR: 1e9,
       rateUSD: 1e9,
       rateEUR: 1e9,
       loading: true
@@ -94,8 +95,8 @@ class Balance extends React.Component {
                           </thead>
                           <tbody>
                             <tr>
-                              <td>грн/грн</td>
-                              <td>1.00/1.00</td>
+                              <td>рубль/грн</td>
+                              <td>1.00/{this.state.rateRUR}</td>
                               <td>{this.state.date}</td>
                             </tr>
                             <tr>
@@ -138,10 +139,14 @@ class Balance extends React.Component {
     setTimeout(() => {
       BalanceService.retrieveCurrentRate()
         .then(currencyArr => {
-          this.setState({
-            rateUSD: (+currencyArr[0].buy).toFixed(2),
-            rateEUR: (+currencyArr[1].buy).toFixed(2),
-            loading: false
+          currencyArr.forEach(currency => {
+            if (currency.ccy === 'RUR') {
+              this.setState({ rateRUR: (+currency.buy).toFixed(2) })
+            } else if (currency.ccy === 'USD') {
+              this.setState({ rateUSD: (+currency.buy).toFixed(2) })
+            } else {
+              this.setState({ rateEUR: (+currency.buy).toFixed(2), loading: false })
+            }
           })
         })
         .catch(error => console.error(error));

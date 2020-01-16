@@ -2,7 +2,7 @@ import info from './Info';
 class AuthenticationService {
 
   async executeJwtAuthenticationService(email, password) {
-    let response = await fetch(`${info.API_URL}/login`, {
+    let response = await fetch(`${info.API_URL}/authentication/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
