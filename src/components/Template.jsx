@@ -8,7 +8,9 @@ import Balance from './Balance';
 // import Settings from './Settings';
 import TemplateService from '../services/TemplateService';
 import AuthenticationService from '../services/AuthenticationService';
-import Contex from '../context';
+import HistoryService from '../services/HistoryService';
+import BalanceService from '../services/BalanceService';
+import Context from '../context';
 
 const Record = React.lazy(() => import('./Record/Record'));
 const Planning = React.lazy(() => import('./Planning'));
@@ -29,12 +31,19 @@ class Template extends React.Component {
         details: false,
         settings: false
       },
+      records: [],
+      chartData: [],
       time: new Date(),
-      date: new Date().getDate() + '.' + (+new Date().getMonth() + 1) + '.' + new Date().getFullYear(),
       previousPageName: '',
-      userName: ''
+      userName: '',
+      currentBalance: '',
+      selectedRecord: {}
     };
+    this.showDetails = this.showDetails.bind(this);
     this.goBack = this.goBack.bind(this);
+    this.retrieveRecords = this.retrieveRecords.bind(this);
+    this.retrieveBalance = this.retrieveBalance.bind(this);
+    this.retrieveChartData = this.retrieveChartData.bind(this);
   }
 
   render() {
@@ -64,7 +73,7 @@ class Template extends React.Component {
           <div className="article-header">
             <div className="time-date">
               <span>{this.state.time.toLocaleTimeString() + ','}</span>
-              <span>{this.state.date}</span>
+              <span>{this.state.time.toLocaleDateString()}</span>
             </div>
             <div className="greeting" onClick={() => this.showLoginOptions()}>
               Здравствуйте, {this.state.userName}
@@ -76,16 +85,26 @@ class Template extends React.Component {
             </div>
           </div>
           <div className="article-content">
-            <Contex.Provider value={{ goBack: this.goBack }}>
-              <Balance isOpen={this.state.content.balance} />
-              <React.Suspense fallback={<p>Loading...</p>}>
+            <Context.Provider value={{ retrieveBalance: this.retrieveBalance }}>
+              <Balance isOpen={this.state.content.balance} currentBalance={this.state.currentBalance} />
+            </Context.Provider>
+            <React.Suspense fallback={<p>Loading...</p>}>
+              <Context.Provider value={{
+                retrieveRecords: this.retrieveRecords,
+                retrieveBalance: this.retrieveBalance,
+                retrieveChartData: this.retrieveChartData
+              }}>
                 <Record isOpen={this.state.content.record} />
-                <Planning isOpen={this.state.content.planning} />
-                <History isOpen={this.state.content.history} />
-                <Details isOpen={this.state.content.details} />
-                <Settings isOpen={this.state.content.settings} goBack={this.goBack} />
-              </React.Suspense>
-            </Contex.Provider>
+              </Context.Provider>
+              <Planning isOpen={this.state.content.planning} />
+              <Context.Provider value={{ showDetails: this.showDetails }}>
+                <History isOpen={this.state.content.history} records={this.state.records}
+                  chartData={this.state.chartData} />
+              </Context.Provider>
+              <Details isOpen={this.state.content.details} showDetails={this.showDetails}
+                selectedRecord={this.state.selectedRecord} />
+              <Settings isOpen={this.state.content.settings} goBack={this.goBack} />
+            </React.Suspense>
           </div>
         </article>
       </div>
@@ -139,6 +158,26 @@ class Template extends React.Component {
     this.setState({ content: contentCopy, previousPageName: currentPageName });
   }
 
+  showDetails(recordBtn) {
+    const contentCopy = Object.assign({}, this.state.content);
+    contentCopy.history = !contentCopy.history;
+    contentCopy.details = !contentCopy.details;
+    if (recordBtn !== undefined) {
+      const recordsCopy = this.state.records.slice();
+      const recordId = +recordBtn.id;
+      let selectedRecord;
+      recordsCopy.forEach(record => {
+        if (record.id === recordId) {
+          selectedRecord = record;
+          // selectedRecord.number = tableTr.getElementsByTagName('th')[0].textContent;
+        }
+      });
+      this.setState({ content: contentCopy, selectedRecord: selectedRecord });
+    } else {
+      this.setState({ content: contentCopy });
+    }
+  }
+
   goBack() {
     const contentCopy = Object.assign({}, this.state.content);
     for (let tab in contentCopy) {
@@ -157,6 +196,30 @@ class Template extends React.Component {
       .catch(error => console.error(error));
   }
 
+  retrieveRecords() {
+    HistoryService.retrieveRecords()
+      .then(result => {
+        result.forEach(record => {
+          record.date = new Date(record.created).toLocaleDateString();
+          record.time = new Date(record.created).toLocaleTimeString();
+        })
+        this.setState({ records: result.reverse() });
+      })
+      .catch(error => console.error(error));
+  }
+
+  retrieveBalance() {
+    BalanceService.retrieveCurrentBalance()
+      .then(obj => this.setState({ currentBalance: obj.balance }))
+      .catch(error => console.error(error));
+  }
+
+  retrieveChartData() {
+    HistoryService.retrieveChartData()
+      .then(result => this.setState({ chartData: result }))
+      .catch(error => console.error(error));
+  }
+
   tick() {
     this.setState({
       time: new Date()
@@ -164,18 +227,15 @@ class Template extends React.Component {
   }
 
   componentDidMount() {
-    // this.timerId = setInterval(
-    //   () => this.tick(), 1000
-    // )
+    this.timerId = setInterval(
+      () => this.tick(), 1000
+    )
 
     this.retrieveUserName();
+    this.retrieveBalance();
+    this.retrieveRecords();
+    this.retrieveChartData();
   }
-
-  componentWillUnmount() {
-
-  }
-
-
 
 
 

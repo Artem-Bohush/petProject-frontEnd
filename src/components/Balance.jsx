@@ -9,7 +9,7 @@ class Balance extends React.Component {
     this.state = {
       date:
         new Date().getDate() + '.' + (+new Date().getMonth() + 1) + '.' + new Date().getFullYear(),
-      currentBalance: '',
+      // currentBalance: '',
       showEditBalance: false,
       rateRUR: 1e9,
       rateUSD: 1e9,
@@ -22,7 +22,7 @@ class Balance extends React.Component {
       <>
         {this.props.isOpen &&
           <>
-            <EditBalance isOpen={this.state.showEditBalance} currentBalance={this.state.currentBalance}
+            <EditBalance isOpen={this.state.showEditBalance} currentBalance={this.props.currentBalance}
               showEditBalanceCallBack={() => this.showEditBalance()} />
             <div className="title-block">
               <h3 className="title">Ваш баланс</h3>
@@ -44,7 +44,7 @@ class Balance extends React.Component {
                               <span className="icon-hryvnia-solid"></span>
                             </div>
                             <div className="balance-value">
-                              {(+this.state.currentBalance).toFixed(2)}
+                              {(+this.props.currentBalance).toFixed(2)}
                             </div>
                           </div>
                         </div>
@@ -56,7 +56,7 @@ class Balance extends React.Component {
                               <span className="icon-dollar-sign-solid"></span>
                             </div>
                             <div className="balance-value">
-                              {((+this.state.currentBalance) / this.state.rateUSD).toFixed(2)}
+                              {((+this.props.currentBalance) / this.state.rateUSD).toFixed(2)}
                             </div>
                           </div>
                         </div>
@@ -68,7 +68,7 @@ class Balance extends React.Component {
                               <span className="icon-euro-sign-solid"></span>
                             </div>
                             <div className="balance-value">
-                              {((+this.state.currentBalance) / this.state.rateEUR).toFixed(2)}
+                              {((+this.props.currentBalance) / this.state.rateEUR).toFixed(2)}
                             </div>
                           </div>
                         </div>
@@ -124,15 +124,15 @@ class Balance extends React.Component {
   }
 
   componentDidMount() {
-    this.getBalance();
+    // this.getBalance();
     this.refreshCurrency();
   }
 
-  getBalance() {
-    BalanceService.retrieveCurrentBalance()
-      .then(obj => this.setState({ currentBalance: obj.balance }))
-      .catch(error => console.error(error));
-  }
+  // getBalance() {
+  //   BalanceService.retrieveCurrentBalance()
+  //     .then(obj => this.setState({ currentBalance: obj.balance }))
+  //     .catch(error => console.error(error));
+  // }
 
   refreshCurrency() {
     this.setState({ loading: true })
@@ -154,7 +154,6 @@ class Balance extends React.Component {
   }
 
   showEditBalance() {
-    this.getBalance();
     this.setState({ showEditBalance: !this.state.showEditBalance });
   }
 }

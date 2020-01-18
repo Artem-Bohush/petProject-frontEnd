@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import Context from '../../context';
 
 function Table({ records }) {
+  const context = useContext(Context);
+
   return (
     <div className="history-card">
       <div className="history-card-header">
@@ -36,18 +39,20 @@ function Table({ records }) {
             {records.map((record, index) => {
               return (
                 <tr key={index}
-                  id={record.id}
-                  onClick={(e) => this.showDetails(e.currentTarget, e.target)}>
+                // id={record.id}
+                // onClick={(e) => context.showDetails(e.currentTarget)}
+                >
                   <th scope="row">{index + 1}</th>
                   <td>{record.sum}</td>
-                  <td>{record.created}</td>
+                  <td>{record.date}</td>
                   <td>{record.categoryName}</td>
                   <td>{
                     record.type === 'income' ?
                       <div className="income">доход</div> :
                       <div className="outcome">расход</div>
                   }</td>
-                  <td><button className="details-btn">Подробнее</button></td>
+                  <td><button className="details-btn" id={record.id}
+                    onClick={(e) => context.showDetails(e.target)}>Подробнее</button></td>
                 </tr>
               )
             })
@@ -57,6 +62,10 @@ function Table({ records }) {
       </div>
     </div>
   )
+
+  // function showDetails() {
+  //   console.log('hello');
+  // }
 }
 
 export default Table;

@@ -10,6 +10,15 @@ class HistoryService {
     })
     return response.json();
   }
+
+  async retrieveChartData() {
+    const response = await fetch(`${info.API_URL}/history/getChartData`, {
+      headers: {
+        authorization: sessionStorage.getItem(info.SESSION_NAME)
+      }
+    })
+    return response.json();
+  }
 }
 
 export default new HistoryService();

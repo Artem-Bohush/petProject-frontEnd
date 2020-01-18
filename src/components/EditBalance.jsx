@@ -1,40 +1,35 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import BalanceService from '../services/BalanceService';
+import Context from '../context';
 
-class EditBalance extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+function EditBalance({ isOpen, currentBalance, showEditBalanceCallBack }) {
+  const context = useContext(Context);
 
-    };
-  }
-  render() {
-    return (
-      <>
-        {this.props.isOpen &&
-          <div className="edit-balance-modal">
-            <div className="edit-balance-modal-body">
-              <div className="close" onClick={this.props.showEditBalanceCallBack}></div>
-              <div className="current-balance-group">
-                <div className="balance-header">Текущий баланс</div>
-                <div className="current-balance">
-                  <span className="icon-hryvnia-solid"></span>
-                  <span className="balance">{this.props.currentBalance}</span>
-                </div>
+  return (
+    <>
+      {isOpen &&
+        <div className="edit-balance-modal">
+          <div className="edit-balance-modal-body">
+            <div className="close" onClick={showEditBalanceCallBack}></div>
+            <div className="current-balance-group">
+              <div className="balance-header">Текущий баланс</div>
+              <div className="current-balance">
+                <span className="icon-hryvnia-solid"></span>
+                <span className="balance">{currentBalance}</span>
               </div>
-              <form onSubmit={(e) => this.setNewBalance(e)}>
-                <div className="form-group">
-                  <label className="control-label" htmlFor="new-balance">Изменить баланс</label>
-                  <input type="number" id="new-balance" className="form-control" name="newBalance"></input>
-                </div>
-                <button type="submit" className="btn btn-primary">Применить</button>
-              </form>
             </div>
-          </div >
-        }
-      </>
-    )
-  }
+            <form onSubmit={setNewBalance}>
+              <div className="form-group">
+                <label className="control-label" htmlFor="new-balance">Изменить баланс</label>
+                <input type="number" id="new-balance" className="form-control" name="newBalance"></input>
+              </div>
+              <button type="submit" className="btn btn-primary">Применить</button>
+            </form>
+          </div>
+        </div >
+      }
+    </>
+  )
 
   // componentDidMount() {
   //   this.getBalance()
@@ -46,31 +41,15 @@ class EditBalance extends React.Component {
   //     .catch(error => console.error(error));
   // }
 
-  setNewBalance(e) {
+  function setNewBalance(e) {
     e.preventDefault();
     let newBalanceValue = document.querySelector('#new-balance').value
     BalanceService.setNewBalance(newBalanceValue)
       .then(() => {
-        this.props.showEditBalanceCallBack()
+        context.retrieveBalance();
+        showEditBalanceCallBack();
       })
       .catch(error => console.error(error));
-    // if (t !== '') {
-    //     let request = new XMLHttpRequest();
-    //     request.open('POST', 'setNewBalance');
-    //     request.setRequestHeader('Content-type', 'application/json; charset = utf-8');
-    //     let obj = {
-    //         email: this.props.email,
-    //         newBalance: t
-    //     };
-    //     let json = JSON.stringify(obj);
-    //     request.send(json);
-    //     request.addEventListener('readystatechange', () => {
-    //         if (request.readyState === 4 && request.status === 200) {
-    //             this.props.editBalanceValueCallBack(t)
-    //             this.props.showEditBalanceCallBack()
-    //         }
-    //     });
-    // }
   }
 }
 

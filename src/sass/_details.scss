@@ -1,93 +1,90 @@
-section {
+.details-card-income {
+  width: 500px;
+  margin: 0 auto;
+  margin-top: 10px;
+  background-color: #fff;
+  box-shadow: 1px 1px 5px rgba(126, 142, 159, 0.1);
+  .details-card-header {
+    height: 50px;
+    background-color: #4bcf99;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    .details-card-income {
-        width: 500px;
-        margin-top: 10px;
-        background-color: #fff;
-        box-shadow: 1px 1px 5px rgba(126,142,159,.1);
-        .details-card-header {
-            height: 50px;
-            background-color: #4BCF99;
-            display: flex;
-            align-items: center;
-            padding-left: 20px;
-            color: #4f5f6f;
-            font-size: 18px;
-            font-weight: 600;
-        }
-    }
-    .details-card-expense {
-        width: 500px;
-        margin-top: 10px;
-        background-color: #fff;
-        box-shadow: 1px 1px 5px rgba(126,142,159,.1);
-        .details-card-header {
-            height: 50px;
-            background-color: #D9534F;
-            display: flex;
-            align-items: center;
-            padding-left: 20px;
-            color: #4f5f6f;
-            font-size: 18px;
-            font-weight: 600;
-        }
-    }
+    padding-left: 20px;
+    color: #4f5f6f;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+.details-card-expense {
+  width: 500px;
+  margin: 0 auto;
+  margin-top: 10px;
+  background-color: #fff;
+  box-shadow: 1px 1px 5px rgba(126, 142, 159, 0.1);
+  .details-card-header {
+    height: 50px;
+    background-color: #ff4444;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    color: #4f5f6f;
+    font-size: 18px;
+    font-weight: 600;
+  }
 }
 .details-card-block {
-    border-bottom: 1px solid #D7DDE4;
-    padding: 20px 20px 20px 40px;
-    ul {
-        margin-bottom: 0;
-        li {
-            color: #4f5f6f;
-            margin-bottom: 5px;
-            span {
-                font-weight: 600;
-            }
-        }
+  border-bottom: 1px solid #d7dde4;
+  padding: 20px 20px 20px 40px;
+  ul {
+    margin-bottom: 0;
+    li {
+      color: #4f5f6f;
+      margin-bottom: 5px;
+      span {
+        font-weight: 600;
+      }
     }
+  }
 }
 .details-card-footer {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    margin-left: 20px;
-    color: #4f5f6f;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  color: #4f5f6f;
 }
 
 .details-title-block {
-    justify-content: start;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #D7DDE4;
-    height: 50px;
-    margin: 20px 0 25px 0;
-    padding-bottom: 10px;
-    .title {
-        color: #4F5F6F;
-        margin: 0;
-        font-weight: 600;
-        font-size: 23px;
-    } 
-    div {
-        width: 28px;
-        height: 28px;
-        text-align: center;
-        border: 2px solid #52bcd3;
-        border-radius: 50%;
-        margin-right: 15px;
-        cursor: pointer;
-        color: #52bcd3;
-        &:hover {
-            border: 2px solid #0f93b1;
-            color: #0f93b1;
-            transition: 0.3s;
-        }
-        .icon-arrow-left-solid::before {
-            margin-top: 4px;
-            display: block;
-        }
+  justify-content: start;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #d7dde4;
+  height: 50px;
+  margin: 20px 0 25px 0;
+  padding-bottom: 10px;
+  .title {
+    color: #4f5f6f;
+    margin: 0;
+    font-weight: 600;
+    font-size: 23px;
+  }
+  div {
+    width: 28px;
+    height: 28px;
+    text-align: center;
+    border: 2px solid #52bcd3;
+    border-radius: 50%;
+    margin-right: 15px;
+    cursor: pointer;
+    color: #52bcd3;
+    &:hover {
+      border: 2px solid #0f93b1;
+      color: #0f93b1;
+      transition: 0.3s;
     }
+    .icon-arrow-left-solid::before {
+      margin-top: 4px;
+      display: block;
+    }
+  }
 }

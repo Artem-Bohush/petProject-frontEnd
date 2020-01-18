@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import RecordService from '../../services/RecordService';
+import Context from '../../context';
 
 function AddRecord({ categories }) {
+  const context = useContext(Context);
 
   return (
     <div className="record-card">
@@ -10,6 +12,14 @@ function AddRecord({ categories }) {
       </div>
       <div className="record-card-block">
         <form onSubmit={add}>
+          <div className="form-group">
+            <label htmlFor="select-addRecord">Выберите категорию</label>
+            <select className="form-control" id="select-addRecord">
+              {categories.map((category, index) => {
+                return <option key={index} id={category.id}>{category.name}</option>
+              })}
+            </select>
+          </div>
           <div className="form-group">
             <label className="control-label">Выберите тип</label>
             <div className="radio-types">
@@ -29,14 +39,6 @@ function AddRecord({ categories }) {
                 <label className="radio-label" htmlFor="radio-3">Планирование</label>
               </div>
             </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="select-addRecord">Выберите категорию</label>
-            <select className="form-control" id="select-addRecord">
-              {categories.map((category, index) => {
-                return <option key={index} id={category.id}>{category.name}</option>
-              })}
-            </select>
           </div>
           <div className="form-group">
             <label className="control-label" htmlFor="category-descr">Введите описание</label>
@@ -87,6 +89,9 @@ function AddRecord({ categories }) {
             descInp.value = '';
             sumInp.value = '';
             dateInp.value = '';
+            context.retrieveRecords();
+            context.retrieveBalance();
+            context.retrieveChartData();
           })
           .catch(error => console.error(error));
       } else {
@@ -96,6 +101,9 @@ function AddRecord({ categories }) {
             descInp.value = '';
             sumInp.value = '';
             dateInp.value = '';
+            context.retrieveRecords();
+            context.retrieveBalance();
+            context.retrieveChartData();
           })
           .catch(error => console.error(error));
       }
