@@ -31,7 +31,7 @@
         border-color: #52bcd3;
         box-shadow: none;
       }
-      .select {
+      .select-history {
         position: relative;
         &::after {
           content: "";
@@ -119,6 +119,18 @@
         &:hover {
           color: #fff;
           background-color: #52bcd3;
+          transition: 0.3s;
+        }
+      }
+      .delete-btn {
+        @extend .details-btn;
+        border: 1px solid #e24b30;
+        color: #e24b30;
+        position: absolute;
+        right: 80px;
+        &:hover {
+          color: #fff;
+          background-color: #e24b30;
           transition: 0.3s;
         }
       }

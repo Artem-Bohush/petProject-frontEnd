@@ -19,6 +19,17 @@ class HistoryService {
     })
     return response.json();
   }
+
+  deleteRecord(recordId) {
+    return fetch(`${info.API_URL}/history/deleteRecord`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        authorization: sessionStorage.getItem(info.SESSION_NAME)
+      },
+      body: JSON.stringify({ id: recordId })
+    });
+  }
 }
 
 export default new HistoryService();

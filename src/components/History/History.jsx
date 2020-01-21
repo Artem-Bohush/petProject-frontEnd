@@ -28,7 +28,7 @@ class History extends React.Component {
               </div>
               <div className="row">
                 <div className="col-md-12">
-                  <Table records={this.props.records} />
+                  <Table filteredRecords={this.props.filteredRecords} />
                 </div>
               </div>
             </div>

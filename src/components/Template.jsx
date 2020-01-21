@@ -1,19 +1,15 @@
 import React from 'react';
 import logo from '../img/png/logo.png';
 import Balance from './Balance';
-// import Record from './Record/Record';
-// import Planning from './Planning';
-// import History from './History/History';
-// import Details from './Details';
-// import Settings from './Settings';
 import TemplateService from '../services/TemplateService';
 import AuthenticationService from '../services/AuthenticationService';
 import HistoryService from '../services/HistoryService';
 import BalanceService from '../services/BalanceService';
+import PlanningService from '../services/PlanningService';
 import Context from '../context';
 
 const Record = React.lazy(() => import('./Record/Record'));
-const Planning = React.lazy(() => import('./Planning'));
+const Planning = React.lazy(() => import('./Planning/Planning'));
 const History = React.lazy(() => import('./History/History'));
 const Details = React.lazy(() => import('./Details'));
 const Settings = React.lazy(() => import('./Settings'));
@@ -32,7 +28,10 @@ class Template extends React.Component {
         settings: false
       },
       records: [],
+      filteredRecords: [],
       chartData: [],
+      planningProgressData: [],
+      planningTableData: [],
       time: new Date(),
       previousPageName: '',
       userName: '',
@@ -44,6 +43,9 @@ class Template extends React.Component {
     this.retrieveRecords = this.retrieveRecords.bind(this);
     this.retrieveBalance = this.retrieveBalance.bind(this);
     this.retrieveChartData = this.retrieveChartData.bind(this);
+    this.doHistorySearch = this.doHistorySearch.bind(this);
+    this.retrievePlanningData = this.retrievePlanningData.bind(this);
+    this.deleteRecord = this.deleteRecord.bind(this);
   }
 
   render() {
@@ -92,13 +94,24 @@ class Template extends React.Component {
               <Context.Provider value={{
                 retrieveRecords: this.retrieveRecords,
                 retrieveBalance: this.retrieveBalance,
-                retrieveChartData: this.retrieveChartData
+                retrieveChartData: this.retrieveChartData,
+                retrievePlanningData: this.retrievePlanningData
               }}>
                 <Record isOpen={this.state.content.record} />
               </Context.Provider>
-              <Planning isOpen={this.state.content.planning} />
-              <Context.Provider value={{ showDetails: this.showDetails }}>
-                <History isOpen={this.state.content.history} records={this.state.records}
+              <Context.Provider value={{ deleteRecord: this.deleteRecord }}>
+                <Planning isOpen={this.state.content.planning}
+                  planningProgressData={this.state.planningProgressData}
+                  planningTableData={this.state.planningTableData}
+                  currentBalance={this.state.currentBalance} />
+              </Context.Provider>
+              <Context.Provider value={{
+                showDetails: this.showDetails,
+                doHistorySearch: this.doHistorySearch,
+                retrieveRecords: this.retrieveRecords,
+                deleteRecord: this.deleteRecord
+              }}>
+                <History isOpen={this.state.content.history} filteredRecords={this.state.filteredRecords}
                   chartData={this.state.chartData} />
               </Context.Provider>
               <Details isOpen={this.state.content.details} showDetails={this.showDetails}
@@ -125,6 +138,9 @@ class Template extends React.Component {
       contentCopy[tab] = false;
     }
     contentCopy[name] = true;
+    if (contentCopy.history === true) {
+      this.setState({ filteredRecords: this.state.records })
+    }
     this.setState({ content: contentCopy })
   }
 
@@ -174,7 +190,7 @@ class Template extends React.Component {
       });
       this.setState({ content: contentCopy, selectedRecord: selectedRecord });
     } else {
-      this.setState({ content: contentCopy });
+      this.setState({ content: contentCopy, filteredRecords: this.state.records });
     }
   }
 
@@ -199,11 +215,24 @@ class Template extends React.Component {
   retrieveRecords() {
     HistoryService.retrieveRecords()
       .then(result => {
+        result.reverse();
         result.forEach(record => {
           record.date = new Date(record.created).toLocaleDateString();
           record.time = new Date(record.created).toLocaleTimeString();
         })
-        this.setState({ records: result.reverse() });
+        this.setState({ records: result, filteredRecords: result });
+      })
+      .catch(error => console.error(error));
+  }
+
+  deleteRecord(btn) {
+    const recordId = btn.id - 1;
+    HistoryService.deleteRecord(recordId)
+      .then(() => {
+        this.retrieveBalance();
+        this.retrieveRecords();
+        this.retrieveChartData();
+        this.retrievePlanningData();
       })
       .catch(error => console.error(error));
   }
@@ -220,6 +249,46 @@ class Template extends React.Component {
       .catch(error => console.error(error));
   }
 
+  retrievePlanningData() {
+    PlanningService.retrievePlanningProgressData()
+      .then(result => this.setState({ planningProgressData: result }))
+      .catch(error => console.error(error));
+    PlanningService.retrievePlanningTableData()
+      .then(result => this.setState({ planningTableData: result }))
+      .catch(error => console.error(error));
+  }
+
+  doHistorySearch(searchThis, searchBy) {
+    const recordsCopy = this.state.records.slice();
+    const filteredRecords = [];
+    recordsCopy.forEach(record => {
+      if (searchBy === 'Сумма') {
+        if (String(record.sum).indexOf(searchThis) !== -1) {
+          filteredRecords.push(record);
+        }
+      } else if (searchBy === 'Дата') {
+        if (record.date.indexOf(searchThis) !== -1) {
+          filteredRecords.push(record);
+        }
+      } else if (searchBy === 'Категория') {
+        if (record.categoryName.toLocaleLowerCase().indexOf(searchThis) !== -1) {
+          filteredRecords.push(record);
+        }
+      } else {
+        if (record.type === 'income') {
+          if ('доход'.indexOf(searchThis) !== -1) {
+            filteredRecords.push(record);
+          }
+        } else if (record.type === 'outcome') {
+          if ('расход'.indexOf(searchThis) !== -1) {
+            filteredRecords.push(record);
+          }
+        }
+      }
+    });
+    this.setState({ filteredRecords: filteredRecords });
+  }
+
   tick() {
     this.setState({
       time: new Date()
@@ -227,14 +296,15 @@ class Template extends React.Component {
   }
 
   componentDidMount() {
-    this.timerId = setInterval(
-      () => this.tick(), 1000
-    )
+    // this.timerId = setInterval(
+    //   () => this.tick(), 1000
+    // )
 
     this.retrieveUserName();
     this.retrieveBalance();
     this.retrieveRecords();
     this.retrieveChartData();
+    this.retrievePlanningData();
   }
 
 

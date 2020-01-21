@@ -3,7 +3,7 @@ import info from './Info';
 class BalanceService {
 
   async retrieveCurrentBalance() {
-    const response = await fetch(`${info.API_URL}/balance/getCurrent`, {
+    const response = await fetch(`${info.API_URL}/balance/getCurrentBalance`, {
       headers: {
         authorization: sessionStorage.getItem(info.SESSION_NAME)
       }

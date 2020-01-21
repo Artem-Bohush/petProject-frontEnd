@@ -36,7 +36,7 @@ function AddRecord({ categories }) {
               <div className="radio" onClick={enableDateChoice}>
                 <input type="radio" className="radio-input"
                   name="radios" id="radio-3" />
-                <label className="radio-label" htmlFor="radio-3">Планирование</label>
+                <label className="radio-label" htmlFor="radio-3">Планирование расходов</label>
               </div>
             </div>
           </div>
@@ -92,6 +92,7 @@ function AddRecord({ categories }) {
             context.retrieveRecords();
             context.retrieveBalance();
             context.retrieveChartData();
+            context.retrievePlanningData();
           })
           .catch(error => console.error(error));
       } else {

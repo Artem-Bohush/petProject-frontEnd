@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import RecordService from '../../services/RecordService';
+import Context from '../../context';
 
-function DeleteCategory({ categories, retrieveCategories }) {
+function DeleteCategory({ categories, retrieveCategories, retrieveChartData }) {
+  const context = useContext(Context);
 
   return (
     <div className="record-card">
@@ -33,6 +35,9 @@ function DeleteCategory({ categories, retrieveCategories }) {
       RecordService.deleteCategory({ id: selectedCategoryId })
         .then(() => {
           retrieveCategories();
+          context.retrieveChartData();
+          context.retrieveRecords();
+          context.retrieveBalance();
         })
         .catch(error => console.error(error));
     }
