@@ -9,7 +9,6 @@ class Balance extends React.Component {
     this.state = {
       date:
         new Date().getDate() + '.' + (+new Date().getMonth() + 1) + '.' + new Date().getFullYear(),
-      // currentBalance: '',
       showEditBalance: false,
       rateRUR: 1e9,
       rateUSD: 1e9,

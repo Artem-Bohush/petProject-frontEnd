@@ -7,8 +7,6 @@ class History extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // isOpen: this.props.isOpen,
-      // records: this.props.records
     };
   }
 
@@ -38,32 +36,11 @@ class History extends React.Component {
     )
   }
 
-  // retrieveRecords() {
-  //   const records = [];
-  //   HistoryService.retrieveRecords()
-  //     .then(result => {
-  //       result.forEach(record => records.push(record))
-  //     })
-  //     .catch(error => console.error(error));
-  //   return records;
-  // }
-
   showDetails(row, btn) {
     if (btn.classList.contains('details-btn')) {
-      // let recordType = row.querySelector('.income')
-      // if (recordType !== null) {
-      //     this.props.showRecordDetailsCallBack(row.getAttribute('id'))
-      // }
       this.props.showRecordDetailsCallBack(row.getAttribute('id'))
     }
   }
-
-  // static getDerivedStateFromProps(nextProps) {
-  //   return {
-  //     isOpen: nextProps.isOpen,
-  //     records: nextProps.records
-  //   };
-  // }
 }
 
 export default History;

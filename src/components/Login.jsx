@@ -1,23 +1,18 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import logo from '../img/png/logo.png';
-import AuthenticationService from '../services/AuthenticationService';
+import LoginSignupService from '../services/LoginSignupService';
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
-      password: '',
+      showSuccessSignup: false,
+      showSuccessLogin: false,
+      showFailedLogin: false,
+      requireEmail: false,
+      requirePassword: false
     };
-  }
-
-  handleChange(event) {
-    this.setState(
-      {
-        [event.target.name]: event.target.value
-      }
-    )
   }
 
   render() {
@@ -32,165 +27,92 @@ class Login extends React.Component {
           </header>
           <div className="login-content">
             <p className="login-content-title">Войдите для работы</p>
-            <div className="success-signup" style={this.props.showSuccess}>
+            {this.state.showSuccessSignup && <div className="success-signup">
               Регистрация прошла успешно! Теперь Вы можете войти в
-              систему со своими данными</div>
+              систему со своими данными</div>}
+            {this.state.showFailedLogin && <div className="failed-login">
+              Вы ввели неправильный email или пароль</div>}
             <form className="login-content-form" id="login-form" onSubmit={(e) => this.logIn(e)}>
               <div className="form-group">
                 <label htmlFor="email">Email</label>
-                <input type="text" className="form-input" id="email" name="email"
-                  placeholder="Введите ваш email" onChange={(e) => this.handleChange(e)}></input>
-                <div className="status">Неправильный email</div>
-                <div className="email-require">Заполните поле</div>
+                <input type="email" className="form-input" id="email" name="email"
+                  placeholder="Введите ваш email" onChange={() => this.emailTyping()} ></input>
+                {this.state.requireEmail && <div className="email-require">Введите email</div>}
               </div>
               <div className="form-group">
                 <label htmlFor="password">Пароль</label>
                 <input type="password" className="form-input" id="password" name="password"
-                  placeholder="Пароль" onChange={(e) => this.handleChange(e)}></input>
-                <div className="status">Неправильный пароль</div>
-                <div className="password-require">Заполните поле</div>
+                  placeholder="Пароль" onChange={(e) => this.passwordTyping(e)}></input>
+                {this.state.requirePassword && <div className="password-require">Введите пароль</div>}
               </div>
               <button className="form-button" type="submit">Войти</button>
               <p className="form-text">Нет аккаунта?
                 <Link className="link" to="/signup"> Зарегистрироваться!</Link></p>
             </form>
-            <div className="success-login">Авторизация успешна!</div>
+            {this.state.showSuccessLogin && <div className="success-login">Авторизация успешна!</div>}
           </div>
         </div>
       </div>
     )
   }
 
-  //-----------------нижче попередні функції-------------------------------
+  emailTyping() {
+    this.setState({ requireEmail: false });
+    document.getElementsByClassName('form-input')[0].classList.remove('wrong-input');
+  }
 
-  // checkEmail() {
-  //   document.getElementsByClassName('email-require')[0].style.display = 'none'
-  //   document.getElementsByClassName('status')[0].style.display = 'none'
-  // }
-
-  // checkPassword() {
-  //   document.getElementsByClassName('password-require')[0].style.display = 'none'
-  //   document.getElementsByClassName('status')[1].style.display = 'none'
-  // }
+  passwordTyping() {
+    this.setState({ requirePassword: false });
+    document.getElementsByClassName('form-input')[1].classList.remove('wrong-input');
+  }
 
   logIn(e) {
     e.preventDefault();
-    AuthenticationService
-      .executeJwtAuthenticationService(this.state.email, this.state.password)
-      .then(result => {
-        AuthenticationService.registerSuccessfulLoginForJwt(result.token);
-        document.querySelector('.success-login').style.display = 'block';
-        setTimeout(() => {
-          this.props.history.push('/')
-        }, 1500);
-      })
-      .catch(error => console.error(error));
+    let form = document.querySelector('#login-form'),
+      inputs = Array.from(form.getElementsByClassName('form-input'));
+
+    if (inputs[0].value !== '' && inputs[1].value !== '') {
+      LoginSignupService
+        .executeJwtAuthenticationService(inputs[0].value, inputs[1].value)
+        .then(result => {
+          if (result.token) {
+            LoginSignupService.registerSuccessfulLoginForJwt(result.token);
+            inputs[0].classList.add('right-input');
+            inputs[1].classList.add('right-input');
+            this.setState({ showSuccessLogin: true, showFailedLogin: false });
+            setTimeout(() => {
+              this.props.history.push('/');
+            }, 1500);
+          } else {
+            inputs[0].classList.add('wrong-input');
+            inputs[1].classList.add('wrong-input');
+            this.setState({ showFailedLogin: true, showSuccessSignup: false });
+          }
+        })
+        .catch(error => console.error(error));
+    } else {
+      inputs.forEach((input, index) => {
+        if (input.value === '') {
+          input.classList.add('wrong-input');
+          if (index === 0) {
+            this.setState({ requireEmail: true });
+          } else if (index === 1) {
+            this.setState({ requirePassword: true });
+          }
+        }
+      });
+    }
   }
 
-  // logIn(e) {
-  //   e.preventDefault();
-  //   AuthenticationService
-  //     .executeBasicAuthentication(this.state.email, this.state.password)
-  //     .then(() => {
-  // AuthenticationService.registerSuccessfulLogin(this.state.email, this.state.password);
-  // document.querySelector('.success-login').style.show = 'block'
-  // setTimeout(() => {
-  //   this.props.history.push(`/`)
-  // }, 1500);
-  //     }).catch(() => {
-  //       console.log('wrongData');
-  //       // this.setState({ showSuccessMessage: false });
-  //       // this.setState({ hasLoginFailed: true });
-  //     })
+  componentDidMount() {
+    if (sessionStorage.getItem('successSignup')) {
+      this.setState({ showSuccessSignup: true });
+    }
+  }
 
-
-
-
-
-
-  //   // let form = document.querySelector('.login-content-form'),
-  //   //     inputs = form.getElementsByClassName('form-input'),
-  //   //     status = document.getElementsByClassName('status'),
-  //   //     success = document.getElementsByClassName('success-login')[0],
-  //   //     emailRequire = document.getElementsByClassName('email-require')[0],
-  //   //     passwordRequire = document.getElementsByClassName('password-require')[0];
-
-  //   // emailRequire.style.display = 'none'
-  //   // passwordRequire.style.display = 'none'
-  //   // for (const el of inputs) {
-  //   //     el.classList.remove('wrong-input')
-  //   // }
-
-  //   // if (inputs[0].value !== '' && inputs[1].value !== '') {
-  //   //     let request = new XMLHttpRequest();
-  //   //     request.open('POST', 'login');
-  //   //     request.setRequestHeader('Content-type', 'application/json; charset = utf-8');
-  //   //     let formData = new FormData(form);
-  //   //     let obj = {};
-  //   //     formData.forEach(function (value, key) {
-  //   //         obj[key] = value;
-  //   //     })
-  //   //     let json = JSON.stringify(obj);
-  //   //     request.send(json);
-  //   //     request.addEventListener('readystatechange', () => {
-  //   //         if (request.readyState === 4 && request.status === 200) {
-  //   //             let data = JSON.parse(request.response);
-  //   //             if (data.description === 'wrong email') { 
-  //   //                 status[0].style.display = 'block'
-  //   //                 inputs[0].classList.add('wrong-input');
-  //   //                 inputs[0].value = '';
-  //   //             } else if (data.description === 'wrong password') {
-  //   //                 status[0].style.display = 'none'
-  //   //                 inputs[0].classList.remove('wrong-input');
-  //   //                 inputs[0].classList.add('right-input');
-  //   //                 status[1].style.display = 'block'
-  //   //                 inputs[1].classList.add('wrong-input');
-  //   //                 inputs[1].value = '';
-  //   //             } else {
-  //   //                 for (const el of inputs) {
-  //   //                     el.classList.remove('wrong-input')
-  //   //                     el.classList.remove('right-input')
-  //   //                 }
-  //   //                 for (const el of status) {
-  //   //                     el.style.display = 'none'
-  //   //                 }
-  //   //                 success.style.display = 'block';
-  //   //                 setTimeout(() => {
-  //   //                     this.props.toggleToTemplateCallBack(data.email, data.name, data.currentBalance);
-  //   //                 }, 1500);
-  //   //             }
-  //   //         }
-  //   //     })
-  //   // } else {
-  //   //     if (inputs[0].value === '') {
-  //   //         for (const el of status) {
-  //   //             el.style.display = 'none'
-  //   //         }
-  //   //         emailRequire.style.display = 'block'
-  //   //         inputs[0].classList.add('wrong-input');
-  //   //     } else {
-  //   //         for (const el of status) {
-  //   //             el.style.display = 'none'
-  //   //         }
-  //   //         emailRequire.style.display = 'none'
-  //   //         inputs[0].classList.remove('wrong-input');
-  //   //         passwordRequire.style.display = 'block'
-  //   //         inputs[1].classList.add('wrong-input');
-  //   //     }
-  //   // }
-  // }
-
-  // showSignUp() {
-  //     const contentCopy = this.state.content.concat()
-  //     contentCopy.forEach(element => {
-  //         if (element.show) {
-  //             element.show = false
-  //             return
-  //         }
-  //     })
-  //     contentCopy.find(c => c.name === 'SignUp').show = true
-  //     this.setState({content: contentCopy})
-  // }
+  componentWillUpdate() {
+    sessionStorage.removeItem('successSignup');
+  }
 }
 
 export default withRouter(Login)

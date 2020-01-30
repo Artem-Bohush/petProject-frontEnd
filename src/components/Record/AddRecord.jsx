@@ -23,17 +23,17 @@ function AddRecord({ categories }) {
           <div className="form-group">
             <label className="control-label">Выберите тип</label>
             <div className="radio-types">
-              <div className="radio" onClick={disableDateChoice}>
+              <div className="radio">
                 <input type="radio" className="radio-input"
                   name="radios" id="radio-1" />
                 <label className="radio-label" htmlFor="radio-1">Доход</label>
               </div>
-              <div className="radio" onClick={disableDateChoice}>
+              <div className="radio">
                 <input type="radio" className="radio-input"
                   name="radios" id="radio-2" />
                 <label className="radio-label" htmlFor="radio-2">Расход</label>
               </div>
-              <div className="radio" onClick={enableDateChoice}>
+              <div className="radio">
                 <input type="radio" className="radio-input"
                   name="radios" id="radio-3" />
                 <label className="radio-label" htmlFor="radio-3">Планирование расходов</label>
@@ -48,10 +48,6 @@ function AddRecord({ categories }) {
             <label className="control-label" htmlFor="category-sum">Введите суму</label>
             <input type="number" id="category-sum" className="form-control"></input>
           </div>
-          <div className="form-group">
-            <label className="control-label" htmlFor="category-date">Выберите дату</label>
-            <input disabled type="date" id="category-date" className="form-control"></input>
-          </div>
           <button type="submit" className="btn btn-primary">Добавить</button>
         </form>
       </div>
@@ -64,7 +60,6 @@ function AddRecord({ categories }) {
     const radioBtns = Array.from(document.getElementsByClassName('radio-input')),
       descInp = document.querySelector('#category-descr'),
       sumInp = document.querySelector('#category-sum'),
-      dateInp = document.querySelector('#category-date'),
       selectedIndex = document.getElementById('select-addRecord').selectedIndex,
       options = document.getElementById('select-addRecord').options;
 
@@ -74,7 +69,7 @@ function AddRecord({ categories }) {
       }
     })
 
-    if (isChecked === true && descInp !== '' && sumInp !== '' && options.length > 0) {
+    if (isChecked === true && descInp.value !== '' && sumInp.value !== '' && options.length > 0) {
       const selectedCategoryId = options[selectedIndex].id;
       const newRecordData = {
         description: descInp.value,
@@ -83,12 +78,10 @@ function AddRecord({ categories }) {
       }
       if (radioBtns[2].checked) {
         newRecordData.type = 'planning';
-        newRecordData.planningDate = dateInp.value;
         RecordService.addRecord(newRecordData)
           .then(() => {
             descInp.value = '';
             sumInp.value = '';
-            dateInp.value = '';
             context.retrieveRecords();
             context.retrieveBalance();
             context.retrieveChartData();
@@ -101,27 +94,12 @@ function AddRecord({ categories }) {
           .then(() => {
             descInp.value = '';
             sumInp.value = '';
-            dateInp.value = '';
             context.retrieveRecords();
             context.retrieveBalance();
             context.retrieveChartData();
           })
           .catch(error => console.error(error));
       }
-    }
-  }
-
-  function disableDateChoice() {
-    let t = document.querySelector('#category-date')
-    if (t.disabled !== true) {
-      t.disabled = true
-    }
-  }
-
-  function enableDateChoice() {
-    let t = document.querySelector('#category-date')
-    if (t.disabled === true) {
-      t.disabled = false
     }
   }
 }

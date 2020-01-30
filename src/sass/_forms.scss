@@ -41,9 +41,17 @@
         margin-bottom: 20px;
       }
       .success-signup {
-        display: none;
         color: #fff;
         background-color: #4dce9d;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 15px;
+        padding: 10px 10px 15px 10px;
+        margin-bottom: 10px;
+      }
+      .failed-login {
+        color: #fff;
+        background-color: #eb554b;
         text-align: center;
         border-radius: 5px;
         font-size: 15px;
@@ -142,42 +150,30 @@
             border-bottom: 1px solid #61b85c;
           }
           .status {
-            display: none;
-            font-size: 14px;
-            color: #da000b;
-            font-weight: 400;
-            font-style: italic;
-          }
-          .email-exists {
-            display: none;
             font-size: 14px;
             color: #da000b;
             font-weight: 400;
             font-style: italic;
           }
           .email-require {
-            display: none;
             font-size: 14px;
             color: #da000b;
             font-weight: 400;
             font-style: italic;
           }
           .password-require {
-            display: none;
             font-size: 14px;
             color: #da000b;
             font-weight: 400;
             font-style: italic;
           }
           .password-length {
-            display: none;
             font-size: 14px;
             color: #da000b;
             font-weight: 400;
             font-style: italic;
           }
           .name-require {
-            display: none;
             font-size: 14px;
             color: #da000b;
             font-weight: 400;
@@ -235,7 +231,6 @@
         }
       }
       .success-login {
-        display: none;
         text-align: center;
         color: #61b85c;
       }

@@ -74,8 +74,9 @@
 .planning-content-block {
   display: flex;
   flex-direction: column;
-  #table {
+  .table {
     margin-top: 25px;
+    color: #4f5f6f;
     .delete-btn {
       height: 30px;
       width: 100px;

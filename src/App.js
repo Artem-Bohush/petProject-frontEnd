@@ -8,15 +8,7 @@ import AuthenticatedRoute from './components/AuthenticatedRoute';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      login: true,
-      signup: false,
-      template: false,
-      successSignup: { display: 'none' },
-      userEmail: '',
-      userName: '',
-      userBalance: '',
-    };
+    this.state = {};
   }
 
   render() {

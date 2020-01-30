@@ -1,5 +1,16 @@
 import info from './Info';
-class AuthenticationService {
+class LoginSignupService {
+
+  async executeCheckingEmail(email) {
+    let response = await fetch(`${info.API_URL}/authentication/checkEmail`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({ email })
+    });
+    return await response.json();
+  }
 
   async executeJwtAuthenticationService(email, password) {
     let response = await fetch(`${info.API_URL}/authentication/login`, {
@@ -14,8 +25,16 @@ class AuthenticationService {
 
   registerSuccessfulLoginForJwt(token) {
     sessionStorage.setItem(info.SESSION_NAME, 'Bearer_' + token);
-    // this.token = 'Bearer_' + token;
-    // this.setupAxiosInterceptors(this.createJWTToken(token))
+  }
+
+  executeSignup(newUserData) {
+    return fetch(`${info.API_URL}/authentication/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(newUserData)
+    });
   }
 
   isUserLoggedIn() {
@@ -61,4 +80,4 @@ class AuthenticationService {
   // }
 }
 
-export default new AuthenticationService()
+export default new LoginSignupService()

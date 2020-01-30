@@ -21,6 +21,7 @@
       .form-control {
         margin-right: 10px;
         border-radius: 0;
+        width: auto;
         &::placeholder {
           color: #c8d2e3;
           font-weight: 400;
@@ -30,6 +31,9 @@
       .form-control:focus {
         border-color: #52bcd3;
         box-shadow: none;
+      }
+      .search-by {
+        padding: 0 5px;
       }
       .select-history {
         position: relative;
@@ -61,6 +65,7 @@
           &:hover {
             border-color: #52bcd3;
             transition: 0.3s;
+            cursor: pointer;
           }
           option {
             color: #4f5f6f;

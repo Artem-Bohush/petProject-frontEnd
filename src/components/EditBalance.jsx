@@ -31,25 +31,17 @@ function EditBalance({ isOpen, currentBalance, showEditBalanceCallBack }) {
     </>
   )
 
-  // componentDidMount() {
-  //   this.getBalance()
-  // }
-
-  // getBalance() {
-  //   BalanceService.retrieveCurrentBalance()
-  //     .then(obj => this.setState({ currentBalance: obj.balance }))
-  //     .catch(error => console.error(error));
-  // }
-
   function setNewBalance(e) {
     e.preventDefault();
     let newBalanceValue = document.querySelector('#new-balance').value
-    BalanceService.setNewBalance(newBalanceValue)
-      .then(() => {
-        context.retrieveBalance();
-        showEditBalanceCallBack();
-      })
-      .catch(error => console.error(error));
+    if (newBalanceValue !== '') {
+      BalanceService.setNewBalance(newBalanceValue)
+        .then(() => {
+          context.retrieveBalance();
+          showEditBalanceCallBack();
+        })
+        .catch(error => console.error(error));
+    }
   }
 }
 

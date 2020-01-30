@@ -12,7 +12,7 @@ function Table({ filteredRecords }) {
           <input type="text" id="search-input" className="form-control" placeholder="Поиск..."
             onInput={doSearch}>
           </input>
-          <span>Искать по:</span>
+          <span className="search-by">Искать по:</span>
           <div className="select-history">
             <select defaultValue="0" id="select-history" onChange={doSearch}>
               <option value="0" disabled hidden>Параметр</option>

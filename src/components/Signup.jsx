@@ -1,12 +1,19 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import SignupService from '../services/SignupService';
 import logo from '../img/png/logo.png';
+import LoginSignupService from '../services/LoginSignupService';
 
 class SignUp extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showSuccessSignup: false,
+      requireEmail: false,
+      requirePassword: false,
+      requireName: false,
+      wrongPassword: false,
+      wrongEmail: false
+    };
   }
 
   render() {
@@ -24,25 +31,25 @@ class SignUp extends React.Component {
             <form className="login-content-form" onSubmit={(e) => this.signUp(e)}>
               <div className="form-group">
                 <label htmlFor="email">Email</label>
-                <input type="text" className="form-input" id="email" name="email"
+                <input type="email" className="form-input" id="email" name="email"
                   placeholder="Введите email"
-                  onInput={(e) => this.checkEmail(e.target)}></input>
-                <div className="email-exists">Email уже зарегистрирован</div>
-                <div className="email-require">Заполните поле</div>
+                  onInput={(e) => this.checkEmail(e)} onChange={() => this.emailTyping()}></input>
+                {this.state.requireEmail && <div className="email-require">Введите email</div>}
+                {this.state.wrongEmail && <div className="email-require">Этот email уже зарегистрирован</div>}
               </div>
               <div className="form-group">
                 <label htmlFor="password">Пароль</label>
                 <input type="password" className="form-input" id="password"
                   name="password" placeholder="Введите пароль"
-                  onInput={(e) => this.checkPassword(e.target)}></input>
-                <div className="password-require">Заполните поле</div>
-                <div className="password-length">Минимум 6 знаков</div>
+                  onInput={(e) => this.checkPassword(e)} onChange={() => this.passwordTyping()}></input>
+                {this.state.requirePassword && <div className="password-require">Введите пароль</div>}
+                {this.state.wrongPassword && <div className="password-length">Минимум 6 знаков</div>}
               </div>
               <div className="form-group">
                 <label htmlFor="name">Имя</label>
                 <input type="text" className="form-input" id="name" name="username"
-                  placeholder="Введите имя" onInput={() => this.checkName()}></input>
-                <div className="name-require">Заполните поле</div>
+                  placeholder="Введите имя" onChange={() => this.nameTyping()}></input>
+                {this.state.requireName && <div className="name-require">Введите имя</div>}
               </div>
               <div className="form-group">
                 <div className="checkbox">
@@ -54,8 +61,9 @@ class SignUp extends React.Component {
                 onMouseOver={(e) => this.onFocus(e.target)}
                 onMouseOut={(e) => this.outFocus(e.target)}>Зарегистрироваться</button>
               <p className="form-text">Уже есть аккаунт?
-                                <Link className="link" to="/login"> Войти!</Link></p>
-              <div className="success-login">Регистрация успешна!</div>
+                <Link className="link" to="/login"> Войти!</Link>
+              </p>
+              {this.state.showSuccessSignup && <div className="success-login">Регистрация успешна!</div>}
             </form>
           </div>
         </div>
@@ -65,38 +73,60 @@ class SignUp extends React.Component {
 
   signUp(e) {
     e.preventDefault();
-    let form = document.querySelector('.login-content-form'),
+    const form = document.querySelector('.login-content-form'),
       formData = new FormData(form),
-      success = document.querySelector('.success-login'),
       newUser = {};
 
     formData.forEach(function (value, key) {
       newUser[key] = value;
     });
-    SignupService.executeSignup(newUser)
-      .then(() => {
-        console.log('OK');
-      })
-      .catch(error => console.error(error));
-    // LogSignService.signUp(obj).then(() => {
-    //   success.style.display = 'block';
-    //   setTimeout(() => {
-    //     this.props.history.push(`/login`)
-    //   }, 1500);
-    // }).catch(() => {
-    //   console.log('smth went wrong(');
-    // })
+
+    if (newUser.email && newUser.password && newUser.username && !this.state.wrongEmail && !this.state.wrongPassword) {
+      LoginSignupService.executeSignup(newUser)
+        .then(() => {
+          sessionStorage.setItem('successSignup', true);
+          this.setState({ showSuccessSignup: true });
+          setTimeout(() => {
+            this.props.history.push('/login')
+          }, 1500);
+        })
+        .catch(error => console.error(error));
+    } else {
+      const inputs = Array.from(form.getElementsByClassName('form-input'));
+      inputs.forEach((input, index) => {
+        if (input.value === '') {
+          input.classList.add('wrong-input');
+          if (index === 0) {
+            this.setState({ requireEmail: true });
+          } else if (index === 1) {
+            this.setState({ requirePassword: true });
+          } else {
+            this.setState({ requireName: true });
+          }
+        }
+      });
+    }
   }
 
-  checkEmail(el) {
-    // document.getElementsByClassName('email-require')[0].style.display = 'none'
-    // let emailExists = document.querySelector('.email-exists'),
-    //   obj = { email: el.value };
-    // LogSignService.checkEmail(obj).then(() => {
-    //   emailExists.style.display = 'block'
-    // }).catch(() => {
-    //   emailExists.style.display = 'none'
-    // })
+  checkEmail(e) {
+    LoginSignupService.executeCheckingEmail(e.target.value)
+      .then(result => {
+        if (result.emailExists) {
+          document.getElementById('email').classList.add('wrong-input');
+          this.setState({ wrongEmail: true });
+        }
+      })
+      .catch(error => console.error(error));
+  }
+
+  checkPassword(e) {
+    if (e.target.value.length < 6) {
+      e.target.style.borderBottom = '1px solid #DA000B';
+      this.setState({ wrongPassword: true });
+    } else {
+      e.target.style.borderBottom = '1px solid #61B85C';
+      this.setState({ wrongPassword: false });
+    }
   }
 
   agree() {
@@ -111,21 +141,19 @@ class SignUp extends React.Component {
     }
   }
 
-  checkName() {
-    document.getElementsByClassName('name-require')[0].style.display = 'none'
+  emailTyping() {
+    this.setState({ requireEmail: false, wrongEmail: false });
+    document.getElementsByClassName('form-input')[0].classList.remove('wrong-input');
   }
 
-  checkPassword(e) {
-    let lengthWarn = document.getElementsByClassName('password-length')[0];
-    document.getElementsByClassName('password-require')[0].style.display = 'none'
-    if (e.value.length < 6) {
-      lengthWarn.style.display = 'block'
-      e.style.borderBottom = '1px solid #DA000B'
-    } else {
-      lengthWarn.style.display = 'none'
-      e.classList.remove('wrong-input')
-      e.style.borderBottom = '1px solid #61B85C'
-    }
+  passwordTyping() {
+    this.setState({ requirePassword: false });
+    document.getElementsByClassName('form-input')[1].classList.remove('wrong-input');
+  }
+
+  nameTyping() {
+    this.setState({ requireName: false });
+    document.getElementsByClassName('form-input')[2].classList.remove('wrong-input');
   }
 
   onFocus(e) {
@@ -134,94 +162,6 @@ class SignUp extends React.Component {
 
   outFocus(e) {
     e.style.backgroundColor = "#52bcd3"
-  }
-
-  //-----------------нижче попередні функції-------------------------------
-
-  // checkEmail(e) {
-  //     let request = new XMLHttpRequest(),
-  //         emailExists = document.querySelector('.email-exists');
-
-  //     document.getElementsByClassName('email-require')[0].style.display = 'none'
-
-  //     request.open('POST', 'checkEmail');
-  //     request.setRequestHeader('Content-type', 'application/json; charset = utf-8');
-  //     let obj = {
-  //         email: e.value
-  //     };
-  //     let json = JSON.stringify(obj);
-  //     request.send(json);
-  //     request.addEventListener('readystatechange', () => {
-  //         if (request.readyState === 4 && request.status === 200) {
-  //             let data = JSON.parse(request.response);
-  //             if (data.description === 'wrong email') {
-  //                 emailExists.style.display = 'block'
-  //                 e.style.borderBottom = '1px solid #DA000B'
-  //             } else {
-  //                 emailExists.style.display = 'none'
-  //                 e.style.borderBottom = '1px solid #d7dde4'
-  //             }
-  //         }
-  //     })
-  // }
-
-  goToLogin(e) {
-    e.preventDefault();
-
-    let form = document.querySelector('.login-content-form'),
-      inputs = form.getElementsByClassName('form-input'),
-      emailExists = document.getElementsByClassName('email-exists')[0],
-      success = document.getElementsByClassName('success-login')[0],
-      emailRequire = document.getElementsByClassName('email-require')[0],
-      passwordRequire = document.getElementsByClassName('password-require')[0],
-      nameRequire = document.getElementsByClassName('name-require')[0];
-
-    emailRequire.style.display = 'none'
-    passwordRequire.style.display = 'none'
-    nameRequire.style.display = 'none'
-
-    for (const el of inputs) {
-      el.classList.remove('wrong-input')
-      el.classList.remove('right-input')
-    }
-
-    if (inputs[0].value === '' || inputs[1].value === '' || inputs[2].value === '') {
-      for (const el of inputs) {
-        el.classList.remove('wrong-input')
-        el.classList.remove('right-input')
-      }
-      if (inputs[0].value === '') {
-        emailRequire.style.display = 'block'
-        inputs[0].classList.add('wrong-input')
-      } else if (inputs[1].value === '') {
-        passwordRequire.style.display = 'block'
-        inputs[1].classList.add('wrong-input')
-      } else {
-        nameRequire.style.display = 'block'
-        inputs[2].classList.add('wrong-input')
-      }
-    } else {
-      if (emailExists.style.display === 'none') {
-        let request = new XMLHttpRequest();
-        request.open('POST', 'signup');
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-        let formData = new FormData(form);
-        let obj = {};
-        formData.forEach(function (value, key) {
-          obj[key] = value;
-        })
-        let json = JSON.stringify(obj);
-        request.send(json);
-        request.addEventListener('readystatechange', () => {
-          if (request.readyState === 4 && request.status === 200) {
-            success.style.display = 'block';
-            setTimeout(() => {
-              this.props.toggleSucceessSignupCallBack();
-            }, 1500);
-          }
-        });
-      }
-    }
   }
 }
 

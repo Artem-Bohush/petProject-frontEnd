@@ -2,7 +2,7 @@ import React from 'react';
 import logo from '../img/png/logo.png';
 import Balance from './Balance';
 import TemplateService from '../services/TemplateService';
-import AuthenticationService from '../services/AuthenticationService';
+import LoginSignupService from '../services/LoginSignupService';
 import HistoryService from '../services/HistoryService';
 import BalanceService from '../services/BalanceService';
 import PlanningService from '../services/PlanningService';
@@ -154,7 +154,7 @@ class Template extends React.Component {
   }
 
   logOut() {
-    AuthenticationService.logout();
+    LoginSignupService.logout();
     this.props.history.push('/login');
   }
 
